@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/context 
+						http://www.springframework.org/schema/context/spring-context.xsd
+						http://www.springframework.org/schema/aop
+						http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/tx
+						https://www.springframework.org/schema/tx/spring-tx.xsd">
+						
+
+	<!-- Bean definitions go here  -->
+	
+	
+	
+	
+	
+	<!-- org.apache.commons.dbcp.BasicDataSource destroy-method="close" -->
+	
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" >
+		<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+		<property name="url" value="jdbc:mysql://localhost:3306/sampledb"/>
+		<property name="username" value="root"/>
+		<property name="password" value="Mysql"/>
+	</bean>
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+	
+	<!-- 
+		Mapping Configuration with hbm files
+		<property name="mappingResources">
+			<list>
+				<value>person.hbm.xml</value>
+			</list>
+		</property> 
+		-->
+		<!-- Mapping Configuration with annotated class -->
+		<property name="annotatedClasses">
+			<list>
+                <value>com.example.satya.vo.Person</value>
+                <!-- Add more annotated classes here -->
+            </list>
+        </property>
+        
+        
+        <!--  Configured in old style
+		<property name="hibernateProperties">
+			<value>
+				hibernate.dialect=org.hibernate.dialect.HSQLDialect
+			</value>
+		</property>
+		
+	 -->
+		<property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+	</bean>
+	
+	
+	
+	<bean id="personDAO" class="com.example.satya.dao.PersonDAO" >
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<bean id="personService" class="com.example.satya.service.PersonService">
+		<property name="personDAO" ref="personDAO" />
+	</bean>
+	
+	<bean id="main" class="com.example.satya.main.MainHibernate">
+		<property name="personService" ref="personService" />
+	</bean>
+	
+	<!-- 
+	
+	transaction manager configuration using xml based configuration
+	<bean id="myTxManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="mySessionFactory"/>
+	</bean>
+
+	<bean id="myProductService" class="product.ProductServiceImpl">
+		<property name="transactionManager" ref="myTxManager"/>
+		<property name="productDao" ref="myProductDao"/>
+	</bean>
+	
+	
+	Transaction configuration using annotation
+	  @Configuration
+    @EnableTransactionManagement
+	<bean id="transactionManager"
+        class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    
+    <tx:annotation-driven transaction-manager="transactionManager" />
+ -->
+
+	<!--<bean id="loggingAspect" class="com.spring.example.service.logging.LoggingAspect" />
+	
+	<aop:config>
+		<aop:aspect ref="loggingAspect">
+		
+			 all public methods with any arguments of any type and any
+			return type of all classes in the com.spring.example.service package -->
+			
+		<!--	<aop:pointcut id="logForAllMethods"
+				expression="execution(* com.spring.example.service.*.*(..))" />
+				
+			 all public methods whose name are transfer() with taking three
+			arguments of any type and any return type of all classes in the
+			com.doj.aopapp.service package  
+			<aop:pointcut id="logForAllBefore"
+				expression="execution(* com.spring.example.service.*.*(..))"/>  
+				
+			<aop:after method="afterAdviceForAllMethods" pointcut-ref="logForAllMethods" />
+			<aop:before method="beforeAdviceForMethods" pointcut-ref="logForAllBefore" /> 
+			
+		</aop:aspect> 
+	</aop:config>
+-->
+	
+
+</beans>
